@@ -16,6 +16,8 @@ import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/clients")
 public class ClientController {
@@ -28,13 +30,13 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable String idClient) {
+    public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable("id") String idClient) {
         return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Mono<ResponseEntity<Map<String, Object>>> saveClient(@RequestBody Mono<Client> monoClient) {
+    public Mono<ResponseEntity<Map<String, Object>>> saveClient(@Valid @RequestBody Mono<Client> monoClient) {
         Map<String, Object> request = new HashMap<>();
         return monoClient.flatMap(client -> {
             return service.save(client).map(c -> {
@@ -58,12 +60,13 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<Client>> editClient(@RequestBody Client client, @PathVariable String idClient) {
+    public Mono<ResponseEntity<Client>> editClient(@Valid @RequestBody Client client, @PathVariable("id") String idClient) {
         return service.findById(idClient).flatMap(c -> {
                     c.setNames(client.getNames());
                     c.setSurnames(client.getSurnames());
                     c.setClientType(client.getClientType());
                     c.setDocumentType(client.getDocumentType());
+                    c.setDocumentNumber(client.getDocumentNumber());
                     c.setCellphone(client.getCellphone());
                     c.setEmail(client.getEmail());
                     c.setState(client.getState());
@@ -74,7 +77,7 @@ public class ClientController {
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteClient(@PathVariable String idClient) {
+    public Mono<ResponseEntity<Void>> deleteClient(@PathVariable("id") String idClient) {
         return service.findById(idClient).flatMap(c -> {
             return service.delete(c).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
         }).defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
