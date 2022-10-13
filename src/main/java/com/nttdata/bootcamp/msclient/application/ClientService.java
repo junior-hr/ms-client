@@ -12,5 +12,7 @@ public interface ClientService {
 
     public Mono<Client> save(Client client);
 
-    public Mono<Void> delete(Client client);
+    public Mono<Client> update(Client client, String idClient);
+
+    public Mono<Void> delete(String idClient);
 }

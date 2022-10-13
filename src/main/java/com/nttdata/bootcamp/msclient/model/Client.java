@@ -3,6 +3,7 @@ package com.nttdata.bootcamp.msclient.model;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import reactor.core.publisher.Mono;
 
 import javax.validation.constraints.*;
 
@@ -39,4 +40,16 @@ public class Client {
 
     private Boolean state;
 
+    public Mono<Boolean> validateClientType(String clientType){
+        return Mono.just(clientType).flatMap( ct -> {
+            Boolean isOk = false;
+            if(clientType.equals("Personal")){
+                isOk = true;
+            }
+            if(clientType.equals("Business")){
+                isOk = true;
+            }
+            return Mono.just(isOk);
+        });
+    }
 }

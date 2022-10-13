@@ -1,9 +1,12 @@
 package com.nttdata.bootcamp.msclient.application;
 
+import com.nttdata.bootcamp.msclient.exception.ResourceNotFoundException;
 import com.nttdata.bootcamp.msclient.infrastructure.ClientRepository;
 import com.nttdata.bootcamp.msclient.model.Client;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -19,18 +22,54 @@ public class ClientServiceImpl implements ClientService {
     }
 
     @Override
-    public Mono<Client> findById(String IdClient) {
-        return clientRepository.findById(IdClient);
+    public Mono<Client> findById(String idClient) {
+        return Mono.just(idClient)
+                .flatMap(clientRepository::findById)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente", "Id", idClient)));
     }
 
     @Override
     public Mono<Client> save(Client client) {
-        return clientRepository.save(client);
+        return client.validateClientType(client.getClientType())
+                .flatMap(c -> {
+                    if (c.equals(true)) {
+                        return clientRepository.save(client);
+                    } else {
+                        return Mono.error(new ResourceNotFoundException("Tipo Cliente", "ClientType", client.getClientType()));
+                    }
+                });
     }
 
     @Override
-    public Mono<Void> delete(Client client) {
-        return clientRepository.delete(client);
+    public Mono<Client> update(Client client, String idClient) {
+        return client.validateClientType(client.getClientType())
+                .flatMap(ct -> {
+                    if (ct.equals(true)) {
+                        return clientRepository.findById(idClient)
+                                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente", "Id", idClient)))
+                                .flatMap(c -> {
+                                    c.setNames(client.getNames());
+                                    c.setSurnames(client.getSurnames());
+                                    c.setClientType(client.getClientType());
+                                    c.setDocumentType(client.getDocumentType());
+                                    c.setDocumentNumber(client.getDocumentNumber());
+                                    c.setCellphone(client.getCellphone());
+                                    c.setEmail(client.getEmail());
+                                    c.setState(client.getState());
+                                    return clientRepository.save(client);
+                                });
+                    } else {
+                        return Mono.error(new ResourceNotFoundException("Tipo Cliente", "ClientType", client.getClientType()));
+                    }
+                });
+
+    }
+
+    @Override
+    public Mono<Void> delete(String idClient) {
+        return clientRepository.findById(idClient)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente", "Id", idClient)))
+                .flatMap(clientRepository::delete);
     }
 
 }

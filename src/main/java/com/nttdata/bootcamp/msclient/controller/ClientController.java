@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.nttdata.bootcamp.msclient.application.ClientService;
 import com.nttdata.bootcamp.msclient.model.Client;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +20,7 @@ import reactor.core.publisher.Mono;
 import javax.validation.Valid;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/clients")
 public class ClientController {
     @Autowired
@@ -31,8 +33,7 @@ public class ClientController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable("id") String idClient) {
-        return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+        return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
 
     @PostMapping
@@ -46,40 +47,18 @@ public class ClientController {
                 return ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient())))
                         .contentType(MediaType.APPLICATION_JSON_UTF8).body(request);
             });
-        }).onErrorResume(t -> {
-            return Mono.just(t).cast(WebExchangeBindException.class).flatMap(e -> Mono.just(e.getFieldErrors()))
-                    .flatMapMany(Flux::fromIterable)
-                    .map(fieldError -> "El campo: " + fieldError.getField() + " " + fieldError.getDefaultMessage())
-                    .collectList().flatMap(list -> {
-                        request.put("errors", list);
-                        request.put("timestamp", new Date());
-                        request.put("status", HttpStatus.BAD_REQUEST.value());
-                        return Mono.just(ResponseEntity.badRequest().body(request));
-                    });
         });
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<Client>> editClient(@Valid @RequestBody Client client, @PathVariable("id") String idClient) {
-        return service.findById(idClient).flatMap(c -> {
-                    c.setNames(client.getNames());
-                    c.setSurnames(client.getSurnames());
-                    c.setClientType(client.getClientType());
-                    c.setDocumentType(client.getDocumentType());
-                    c.setDocumentNumber(client.getDocumentNumber());
-                    c.setCellphone(client.getCellphone());
-                    c.setEmail(client.getEmail());
-                    c.setState(client.getState());
-                    return service.save(c);
-                }).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
-                .defaultIfEmpty(ResponseEntity.notFound().build());
+        return service.update(client,idClient)
+                .map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(idClient)))
+                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteClient(@PathVariable("id") String idClient) {
-        return service.findById(idClient).flatMap(c -> {
-            return service.delete(c).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
-        }).defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+        return service.delete(idClient).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
     }
 }
