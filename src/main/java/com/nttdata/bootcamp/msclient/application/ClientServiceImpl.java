@@ -56,7 +56,7 @@ public class ClientServiceImpl implements ClientService {
                                     c.setCellphone(client.getCellphone());
                                     c.setEmail(client.getEmail());
                                     c.setState(client.getState());
-                                    return clientRepository.save(client);
+                                    return clientRepository.save(c);
                                 });
                     } else {
                         return Mono.error(new ResourceNotFoundException("Tipo Cliente", "ClientType", client.getClientType()));

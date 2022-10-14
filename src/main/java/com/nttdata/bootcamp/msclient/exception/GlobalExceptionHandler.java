@@ -29,8 +29,7 @@ import reactor.core.publisher.Mono;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public Mono<ResponseEntity<ErrorDetail>> manejarResourceNotFoundException(ResourceNotFoundException ex) {
-        log.info("ResourceNotFoundException::" + ex);
+    public Mono<ResponseEntity<ErrorDetail>> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return Mono.just(ex).flatMap(e -> {
 
             ErrorDetail errorDetail = new ErrorDetail(new Date(), ex.getMessage(), "");
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BlogAppException.class)
-    public Mono<ResponseEntity<ErrorDetail>> manejarBlogAppException(BlogAppException ex) {
+    public Mono<ResponseEntity<ErrorDetail>> handleBlogAppException(BlogAppException ex) {
         return Mono.just(ex).flatMap(e -> {
             ErrorDetail errorDetail = new ErrorDetail(new Date(), e.getMessage(), "");
             return Mono.just(new ResponseEntity<>(errorDetail, HttpStatus.BAD_REQUEST));
@@ -47,7 +46,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public Mono<ResponseEntity<ErrorDetail>> manejarGlobalException(Exception ex) {
+    public Mono<ResponseEntity<ErrorDetail>> handleGlobalException(Exception ex) {
         return Mono.just(ex).flatMap(e -> {
             ErrorDetail errorDetail = new ErrorDetail(new Date(), e.getMessage(), "");
             return Mono.just(new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR));
@@ -57,9 +56,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(WebExchangeBindException.class)
     protected Mono<ResponseEntity<Object>> handleMethodArgumentNotValid(WebExchangeBindException ex) {
-
-        log.error("validaciones de campo" + ex);
-
         Map<String, Object> request = new HashMap<>();
         return Mono.just(ex).flatMap(e -> Mono.just(e.getFieldErrors()))
                 .flatMapMany(Flux::fromIterable)
