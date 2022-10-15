@@ -72,4 +72,10 @@ public class ClientServiceImpl implements ClientService {
                 .flatMap(clientRepository::delete);
     }
 
+    @Override
+    public Mono<Client> clientbydocumentNumber (String documentNumber){
+        return Mono.just(documentNumber)
+                .flatMap(clientRepository::findByDocumentNumber)
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente", "documentNumber", documentNumber)));
+    }
 }

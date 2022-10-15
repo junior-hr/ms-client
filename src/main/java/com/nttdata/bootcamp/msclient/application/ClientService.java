@@ -15,4 +15,6 @@ public interface ClientService {
     public Mono<Client> update(Client client, String idClient);
 
     public Mono<Void> delete(String idClient);
+    public Mono<Client> clientbydocumentNumber(String documentNumber);
+
 }

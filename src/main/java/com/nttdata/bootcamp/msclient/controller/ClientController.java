@@ -35,6 +35,10 @@ public class ClientController {
     public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable("id") String idClient) {
         return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
+    @GetMapping("/documentNumber/{documentNumber}")
+    public Mono<ResponseEntity<Client>> clientbydocumentNumber(@PathVariable("documentNumber") String documentNumber){
+        return service.clientbydocumentNumber(documentNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+    }
 
     @PostMapping
     public Mono<ResponseEntity<Map<String, Object>>> saveClient(@Valid @RequestBody Mono<Client> monoClient) {
