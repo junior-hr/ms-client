@@ -9,6 +9,8 @@ import com.nttdata.bootcamp.msclient.application.ClientService;
 import com.nttdata.bootcamp.msclient.model.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,11 @@ import javax.validation.Valid;
 @RestController
 @Slf4j
 @RequestMapping("/api/clients")
+@RefreshScope
 public class ClientController {
+    @Value("${message.demo}")
+    private String demoString;
+
     @Autowired
     private ClientService service;
 
@@ -33,6 +39,7 @@ public class ClientController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable("id") String idClient) {
+        log.info("demoString: " + demoString);
         return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
     @GetMapping("/documentNumber/{documentNumber}")
