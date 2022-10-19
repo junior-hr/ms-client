@@ -72,4 +72,11 @@ public class ClientController {
     public Mono<ResponseEntity<Void>> deleteClient(@PathVariable("id") String idClient) {
         return service.delete(idClient).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
     }
+
+    @PutMapping("/documentNumber/{documentNumber}/profile/{profile}")
+    public Mono<ResponseEntity<Client>> updateProfileClient(@PathVariable("documentNumber") String documentNumber, @PathVariable("profile") String profile) {
+        return service.updateProfileByDocumentNumber(documentNumber,profile)
+                .map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient())))
+                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+    }
 }

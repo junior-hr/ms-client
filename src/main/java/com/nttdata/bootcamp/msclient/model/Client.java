@@ -1,6 +1,8 @@
 package com.nttdata.bootcamp.msclient.model;
 
+import com.nttdata.bootcamp.msclient.exception.ResourceNotFoundException;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import reactor.core.publisher.Mono;
@@ -12,6 +14,8 @@ import javax.validation.constraints.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
+@Slf4j
 public class Client {
 
     @Id
@@ -40,16 +44,42 @@ public class Client {
 
     private Boolean state;
 
-    public Mono<Boolean> validateClientType(String clientType){
-        return Mono.just(clientType).flatMap( ct -> {
+    private String profile;
+
+    public Mono<Boolean> validateClientType(String clientType) {
+        log.info("ini----validateClientType-------: ");
+        return Mono.just(clientType).flatMap(ct -> {
             Boolean isOk = false;
-            if(clientType.equals("Personal")){
+            if (clientType.equals("Personal")) {
                 isOk = true;
             }
-            if(clientType.equals("Business")){
+            if (clientType.equals("Business")) {
                 isOk = true;
             }
             return Mono.just(isOk);
+        });
+    }
+
+    public Mono<Void> validateClientProfile() {
+        log.info("ini----validateClientProfile-------: ");
+        return Mono.just(this.clientType).flatMap(ct -> {
+            if(this.profile != null){
+                log.info("0----validateClientProfile-------this.profile: " + this.profile);
+                if (this.clientType.equals("Personal")) {
+                    if(!this.profile.equals("VIP")){
+                        log.info("1----validateClientProfile-------: ");
+                        return Mono.error(new ResourceNotFoundException("Perfil", "profile", this.profile));
+                    }
+                }
+                if (this.clientType.equals("Business")) {
+                    if (!this.profile.equals("PYME")) {
+                        log.info("2----validateClientProfile-------: ");
+                        return Mono.error(new ResourceNotFoundException("Perfil", "profile", this.profile));
+                    }
+                }
+            }
+            log.info("4----validateClientProfile-------: ");
+            return Mono.empty();
         });
     }
 }
