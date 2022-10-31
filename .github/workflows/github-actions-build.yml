@@ -26,5 +26,5 @@ jobs:
     with:
       username: ${{ secrets.DOCKER_USERNAME }}
       password: ${{ secrets.DOCKER_PASSWORD }}
-      repository: junior-hr/ms-client
+      repository: juniorhr/ms-client
       tags: ${{ github.run_number }}
