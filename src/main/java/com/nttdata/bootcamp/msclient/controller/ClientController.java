@@ -26,6 +26,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/clients")
 @RefreshScope
 public class ClientController {
+    
     @Value("${message.demo}")
     private String demoString;
 
