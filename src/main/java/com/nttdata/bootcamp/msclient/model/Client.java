@@ -1,12 +1,15 @@
 package com.nttdata.bootcamp.msclient.model;
 
 import com.nttdata.bootcamp.msclient.exception.ResourceNotFoundException;
-import lombok.*;
+import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import reactor.core.publisher.Mono;
-
 import javax.validation.constraints.*;
 
 @Document(collection = "Client")
@@ -63,10 +66,10 @@ public class Client {
     public Mono<Void> validateClientProfile() {
         log.info("ini----validateClientProfile-------: ");
         return Mono.just(this.clientType).flatMap(ct -> {
-            if(this.profile != null){
+            if (this.profile != null) {
                 log.info("0----validateClientProfile-------this.profile: " + this.profile);
                 if (this.clientType.equals("Personal")) {
-                    if(!this.profile.equals("VIP")){
+                    if (!this.profile.equals("VIP")) {
                         log.info("1----validateClientProfile-------: ");
                         return Mono.error(new ResourceNotFoundException("Perfil", "profile", this.profile));
                     }

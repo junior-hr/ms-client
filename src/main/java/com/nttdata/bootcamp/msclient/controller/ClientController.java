@@ -3,9 +3,11 @@ package com.nttdata.bootcamp.msclient.controller;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.nttdata.bootcamp.msclient.application.ClientService;
+import com.nttdata.bootcamp.msclient.dto.SummaryProductsDto;
 import com.nttdata.bootcamp.msclient.model.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +41,13 @@ public class ClientController {
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable("id") String idClient) {
-        log.info("demoString: " + demoString);
+        log.info("---demoString: " + demoString);
         return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
+
     @GetMapping("/documentNumber/{documentNumber}")
-    public Mono<ResponseEntity<Client>> clientbydocumentNumber(@PathVariable("documentNumber") String documentNumber){
-        return service.clientbydocumentNumber(documentNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+    public Mono<ResponseEntity<Client>> clientByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
+        return service.clientByDocumentNumber(documentNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
 
     @PostMapping
@@ -55,17 +58,14 @@ public class ClientController {
                 request.put("Cliente", c);
                 request.put("mensaje", "Cliente guardado con exito");
                 request.put("timestamp", new Date());
-                return ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(request);
+                return ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient()))).contentType(MediaType.APPLICATION_JSON_UTF8).body(request);
             });
         });
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<Client>> editClient(@Valid @RequestBody Client client, @PathVariable("id") String idClient) {
-        return service.update(client,idClient)
-                .map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(idClient)))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+        return service.update(client, idClient).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(idClient))).contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
     }
 
     @DeleteMapping("/{id}")
@@ -75,8 +75,14 @@ public class ClientController {
 
     @PutMapping("/documentNumber/{documentNumber}/profile/{profile}")
     public Mono<ResponseEntity<Client>> updateProfileClient(@PathVariable("documentNumber") String documentNumber, @PathVariable("profile") String profile) {
-        return service.updateProfileByDocumentNumber(documentNumber,profile)
-                .map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient())))
-                        .contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+        return service.updateProfileByDocumentNumber(documentNumber, profile).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient()))).contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+    }
+
+    @GetMapping("/summaryProducts/{documentNumber}")
+    public Mono<ResponseEntity<SummaryProductsDto>> getSummaryOfCustomersProducts(@PathVariable String documentNumber) {
+        return service.getSummaryOfCustomersProducts(documentNumber)
+                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .body(c))
+                .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 }
