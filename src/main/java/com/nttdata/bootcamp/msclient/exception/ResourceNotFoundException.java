@@ -1,6 +1,5 @@
 package com.nttdata.bootcamp.msclient.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
