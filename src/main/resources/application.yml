@@ -13,9 +13,7 @@ spring:
     name: service-client
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: BankClientDB
+      uri: mongodb://localhost:27017/BankClientDB
       auto-index-creation: true
   config:
     import: optional:configserver:http://ms-config-server:8888
