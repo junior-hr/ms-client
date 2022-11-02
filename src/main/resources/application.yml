@@ -31,15 +31,52 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:9093/eureka
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+
 resilience4j:
   circuitbreaker:
     instances:
-      client:
+      creditCB:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
         failureRateThreshold: 50
-        minimumNumberOfCalls: 4
-        slidingWindowType: COUNT_BASED
-        slidingWindowSize: 8
-        waitDurationInOpenState: 50s
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 2s
         permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 8
+        slidingWindowType: COUNT_BASED
+      loanCB:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 2s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 8
+        slidingWindowType: COUNT_BASED
+
+
+  retry:
+    instances:
+      usermsclientService:
+        maxRetryAttempts: 5
+        waitDuration: 10s
+
+        
 message:
   demo: leido desde local

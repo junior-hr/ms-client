@@ -109,13 +109,9 @@ public class ClientServiceImpl implements ClientService {
         SummaryProductsDto mapperDtoCredit = new SummaryProductsDto();
 
         return creditRepository.findCreditsByDocumentNumber(documentNumber)
-                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente con nroDocumento: "
-                        + documentNumber + " no tiene creditCard")))
                 .collectList()
                 .flatMap(c -> {
                     return loanRepository.findLoanByDocumentNumber(documentNumber)
-                            .switchIfEmpty(Mono.error(new ResourceNotFoundException("Cliente con nroDocumento: "
-                                    + documentNumber + " no tiene Loans")))
                             .collectList()
                             .flatMap(l -> {
                                 return mapperDtoCredit.mapperToSummaryProductsDtoOfCredit(c, l, documentNumber);

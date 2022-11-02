@@ -35,18 +35,18 @@ public class ClientController {
 
     @GetMapping
     public Mono<ResponseEntity<Flux<Client>>> listClients() {
-        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(service.findAll()));
+        return Mono.just(ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(service.findAll()));
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<Client>> viewClientDetails(@PathVariable("id") String idClient) {
         log.info("---demoString: " + demoString);
-        return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+        return service.findById(idClient).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c));
     }
 
     @GetMapping("/documentNumber/{documentNumber}")
     public Mono<ResponseEntity<Client>> clientByDocumentNumber(@PathVariable("documentNumber") String documentNumber) {
-        return service.clientByDocumentNumber(documentNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+        return service.clientByDocumentNumber(documentNumber).map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(c));
     }
 
     @PostMapping
@@ -57,14 +57,14 @@ public class ClientController {
                 request.put("Cliente", c);
                 request.put("mensaje", "Cliente guardado con exito");
                 request.put("timestamp", new Date());
-                return ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient()))).contentType(MediaType.APPLICATION_JSON_UTF8).body(request);
+                return ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient()))).contentType(MediaType.APPLICATION_JSON).body(request);
             });
         });
     }
 
     @PutMapping("/{id}")
     public Mono<ResponseEntity<Client>> editClient(@Valid @RequestBody Client client, @PathVariable("id") String idClient) {
-        return service.update(client, idClient).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(idClient))).contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+        return service.update(client, idClient).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(idClient))).contentType(MediaType.APPLICATION_JSON).body(c));
     }
 
     @DeleteMapping("/{id}")
@@ -74,13 +74,13 @@ public class ClientController {
 
     @PutMapping("/documentNumber/{documentNumber}/profile/{profile}")
     public Mono<ResponseEntity<Client>> updateProfileClient(@PathVariable("documentNumber") String documentNumber, @PathVariable("profile") String profile) {
-        return service.updateProfileByDocumentNumber(documentNumber, profile).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient()))).contentType(MediaType.APPLICATION_JSON_UTF8).body(c));
+        return service.updateProfileByDocumentNumber(documentNumber, profile).map(c -> ResponseEntity.created(URI.create("/api/clients/".concat(c.getIdClient()))).contentType(MediaType.APPLICATION_JSON).body(c));
     }
 
     @GetMapping("/summaryProducts/{documentNumber}")
     public Mono<ResponseEntity<SummaryProductsDto>> getSummaryOfCustomersProducts(@PathVariable String documentNumber) {
         return service.getSummaryOfCustomersProducts(documentNumber)
-                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON_UTF8)
+                .map(c -> ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
                         .body(c))
                 .defaultIfEmpty(ResponseEntity.notFound().build());
     }
