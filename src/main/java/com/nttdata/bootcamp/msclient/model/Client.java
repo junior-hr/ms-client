@@ -1,11 +1,7 @@
 package com.nttdata.bootcamp.msclient.model;
 
 import com.nttdata.bootcamp.msclient.exception.ResourceNotFoundException;
-import lombok.ToString;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,6 +15,7 @@ import javax.validation.constraints.*;
 @NoArgsConstructor
 @ToString
 @Slf4j
+@Builder
 public class Client {
 
     @Id
