@@ -3,9 +3,7 @@ package com.nttdata.bootcamp.msclient.controller;
 import java.net.URI;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import com.nttdata.bootcamp.msclient.application.ClientService;
 import com.nttdata.bootcamp.msclient.dto.SummaryProductsDto;
 import com.nttdata.bootcamp.msclient.model.Client;
@@ -19,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import javax.validation.Valid;
 
 @RestController

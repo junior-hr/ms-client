@@ -5,6 +5,10 @@ import com.nttdata.bootcamp.msclient.model.Client;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+/**
+ * Class ClientService.
+ * Client microservice class ClientService.
+ */
 public interface ClientService {
 
     public Flux<Client> findAll();

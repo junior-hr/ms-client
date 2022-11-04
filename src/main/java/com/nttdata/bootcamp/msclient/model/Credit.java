@@ -1,13 +1,18 @@
 package com.nttdata.bootcamp.msclient.model;
 
-import lombok.Builder;
+import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.Id;
 
+
+/**
+ * Class Credit.
+ * Client microservice class Credit.
+ */
 @Getter
 @Setter
 @AllArgsConstructor

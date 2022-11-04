@@ -117,7 +117,6 @@ public class ClientServiceImpl implements ClientService {
                                 return mapperDtoCredit.mapperToSummaryProductsDtoOfCredit(c, l, documentNumber);
                             });
                 });
-
     }
 
 }

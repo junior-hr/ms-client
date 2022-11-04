@@ -4,7 +4,6 @@ import com.nttdata.bootcamp.msclient.config.WebClientConfig;
 import com.nttdata.bootcamp.msclient.model.Credit;
 import com.nttdata.bootcamp.msclient.model.Loan;
 import com.nttdata.bootcamp.msclient.util.Constants;
-
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,12 +24,12 @@ public class LoanRepository {
     @Autowired
     ReactiveCircuitBreakerFactory reactiveCircuitBreakerFactory;
 
-	@CircuitBreaker(name = Constants.LOAN_CB, fallbackMethod = "getDefaultLoanByDocumentNumber")
+    @CircuitBreaker(name = Constants.LOAN_CB, fallbackMethod = "getDefaultLoanByDocumentNumber")
     public Flux<Loan> findLoanByDocumentNumber(String documentNumber) {
 
         log.info("Inicio----findLoanByDocumentNumber-------: ");
         WebClientConfig webconfig = new WebClientConfig();
-        Flux<Loan> alerts = webconfig.setUriData("http://" + propertyHostMsLoan + ":8081")
+        Flux<Loan> alerts = webconfig.setUriData("http://" + propertyHostMsLoan + ":8092")
                 .flatMap(d -> webconfig.getWebclient().get()
                         .uri("/api/loans/loansDetails/" + documentNumber).retrieve()
                         .onStatus(HttpStatus::is4xxClientError, clientResponse -> Mono.error(new Exception("Error 400")))
@@ -43,8 +42,8 @@ public class LoanRepository {
         return alerts;
     }
 
-	public Flux<Credit> getDefaultLoanByDocumentNumber(String documentNumber, Exception e) {
-		log.info("Inicio----getDefaultLoanByDocumentNumber-------documentNumber: " + documentNumber);
-		return Flux.empty();
-	}
+    public Flux<Credit> getDefaultLoanByDocumentNumber(String documentNumber, Exception e) {
+        log.info("Inicio----getDefaultLoanByDocumentNumber-------documentNumber: " + documentNumber);
+        return Flux.empty();
+    }
 }
